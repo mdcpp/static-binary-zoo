@@ -7,12 +7,13 @@ wget -O source.tar.bz2 https://busybox.net/downloads/busybox-1.33.1.tar.bz2 && \
 tar xf source.tar.bz2
 
 RUN export PATH=/build/cross/bin:$PATH && \
+mkdir -p /output/bin && \
 cd /build/busybox-* && \
 export CFLAGS="-frandom-seed=pulse -I/output/include" && \
 export LDFLAGS="--static -L/output/lib" && \
 make defconfig && \
 make CROSS_COMPILE="$MUSL_TARGET-" -j$(nproc) && \
-make PREFIX="/output" install && \
-$MUSL_TARGET-strip /output/bin/busybox
+$MUSL_TARGET-strip busybox && \
+cp busybox /output/bin/busybox
 
 CMD bash
