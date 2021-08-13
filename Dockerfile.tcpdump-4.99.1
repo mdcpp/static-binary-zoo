@@ -1,0 +1,24 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM libpcap-1.10.1-${MUSL_TARGET} AS libpcap
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=libpcap /output /output
+
+RUN cd /build && \
+wget -O source.tar.gz https://www.tcpdump.org/release/tcpdump-4.99.1.tar.gz && \
+tar xf source.tar.gz
+
+RUN export PATH=/build/cross/bin:$PATH && \
+cd /build/tcpdump-* && \ 
+CC="${MUSL_TARGET}-gcc" \
+CFLAGS="-static -frandom-seed=pulse -I/output/include" \
+LDFLAGS="-L/output/lib" \
+./configure \
+--prefix=/output \
+--host=$($MUSL_TARGET-gcc -dumpmachine) && \
+make -j$(nproc) && \
+make install && \
+$MUSL_TARGET-strip /output/bin/tcpdump
+
+CMD bash

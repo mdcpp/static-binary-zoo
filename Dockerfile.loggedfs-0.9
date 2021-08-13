@@ -1,0 +1,28 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM fuse-2.9.9-${MUSL_TARGET} AS fuse
+FROM libxml2-2.9.12-${MUSL_TARGET} AS libxml2
+FROM pcre-8.45-${MUSL_TARGET} AS pcre
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=fuse /output /output
+COPY --from=libxml2 /output /output
+COPY --from=pcre /output /output
+
+RUN cd /build && \
+wget -O source.tar.gz https://github.com/rflament/loggedfs/archive/refs/tags/loggedfs-0.9.tar.gz && \
+tar xf source.tar.gz
+
+RUN export PATH=/build/cross/bin:/output/bin:$PATH && \
+cd /build/loggedfs-* && \
+sed -e 's/^CC=/CC?=/' -e 's/^CFLAGS=/CFLAGS+=/' -e 's/^LDFLAGS=/LDFLAGS+=/' -i Makefile && \
+CC="${MUSL_TARGET}-g++ -static -static-libstdc++" \
+CFLAGS="-frandom-seed=pulse -I/output/include" \
+LDFLAGS="-L/output/lib" \
+make -j$(nproc) && \
+make install && \
+mkdir -p /output/bin && \
+mv /usr/bin/loggedfs /output/bin && \
+$MUSL_TARGET-strip /output/bin/loggedfs
+
+CMD bash

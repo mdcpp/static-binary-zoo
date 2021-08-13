@@ -1,0 +1,24 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM ncurses-6.2-${MUSL_TARGET} AS ncurses
+FROM musl-cross-make-$MUSL_TARGET
+ARG MUSL_TARGET
+
+COPY --from=ncurses /output /output
+
+RUN cd /build && \
+wget -O source.tar.gz ftp://ftp.cwru.edu/pub/bash/readline-8.1.tar.gz && \
+tar xf source.tar.gz
+
+RUN export PATH=/build/cross/bin:$PATH && \
+cd /build/readline-* && \
+CC="$MUSL_TARGET-gcc" \
+./configure \
+--prefix=/output \
+--with-curses \
+--host=$($MUSL_TARGET-gcc -dumpmachine) \
+--enable-static \
+--disable-shared && \
+make -j$(nproc) && \
+make install
+
+CMD bash

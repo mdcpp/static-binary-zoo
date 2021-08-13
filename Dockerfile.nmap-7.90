@@ -1,0 +1,37 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM libpcap-1.10.1-${MUSL_TARGET} AS libpcap
+FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=libpcap /output /output
+COPY --from=openssl /output /output
+
+RUN cd /build && \
+wget -O source.tar.gz https://nmap.org/dist/nmap-7.92.tgz && \
+tar xf source.tar.gz
+
+RUN export PATH=/build/cross/bin:$PATH && \
+cd /build/nmap-* && \
+CC="${MUSL_TARGET}-gcc -static -fPIC" \
+CXX="${MUSL_TARGET}-g++ -static -fPIC -static-libstdc++" \
+CFLAGS="-frandom-seed=pulse -I/output/include" \
+CPPFLAGS="-frandom-seed=pulse -I/output/include" \
+LDFLAGS="-L/output/lib" \
+./configure \
+-enable-shared=no \
+--enable-static=yes \
+--prefix=/output \
+--with-pcap=linux \
+--without-ncat \
+--without-nping \
+--without-ndiff \
+--without-nmap-update \
+--without-zenmap \
+--with-openssl=/output \
+--host=$($MUSL_TARGET-gcc -dumpmachine) && \
+make -j$(nproc) static && \
+make install && \
+$MUSL_TARGET-strip /output/bin/nmap
+
+CMD bash

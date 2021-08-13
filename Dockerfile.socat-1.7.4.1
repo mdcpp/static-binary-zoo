@@ -1,0 +1,29 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
+FROM readline-8.1-${MUSL_TARGET} AS readline
+FROM zlib-1.2.11-${MUSL_TARGET} AS zlib
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=openssl /output /output
+COPY --from=readline /output /output
+COPY --from=zlib /output /output
+
+RUN cd /build && \
+wget -O source.tar.gz http://www.dest-unreach.org/socat/download/socat-1.7.4.1.tar.gz && \
+tar xf source.tar.gz
+
+RUN export PATH=/build/cross/bin:$PATH && \
+cd /build/socat-* && \
+CC="${MUSL_TARGET}-gcc" \
+CPPFLAGS="-static -frandom-seed=pulse -I/output/include" \
+LDFLAGS="-L/output/lib" \
+LIBS="-lssl -lcrypto -lz" \
+./configure \
+--prefix=/output \
+--host=$($MUSL_TARGET-gcc -dumpmachine) && \
+make -j$(nproc) && \
+make install && \
+$MUSL_TARGET-strip /output/bin/socat
+
+CMD bash

@@ -1,0 +1,22 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM musl-cross-make-$MUSL_TARGET
+ARG MUSL_TARGET
+
+RUN cd /build && \
+wget -O source.tar.gz https://invisible-mirror.net/archives/ncurses/ncurses-6.2.tar.gz && \
+tar xf source.tar.gz
+
+RUN export PATH=/build/cross/bin:$PATH && \
+cd /build/ncurses-* && \
+CC="$MUSL_TARGET-gcc" \
+./configure \
+--prefix=/output \
+--host=$($MUSL_TARGET-gcc -dumpmachine) \
+--disable-stripping \
+--enable-static \
+--with-normal \ 
+--disable-shared && \
+make -j$(nproc) && \
+make install
+
+CMD bash

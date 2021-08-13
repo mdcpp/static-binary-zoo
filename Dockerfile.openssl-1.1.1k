@@ -1,0 +1,27 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM zlib-1.2.11-${MUSL_TARGET} AS zlib
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=zlib /output /output
+
+RUN cd /build && \
+wget -O source.tar.gz https://www.openssl.org/source/openssl-1.1.1k.tar.gz && \
+tar xf source.tar.gz
+
+RUN export PATH=/build/cross/bin:$PATH && \
+cd /build/openssl-* && \
+CC="gcc" \
+CFLAGS="-static -frandom-seed=pulse -I/output/include" \
+LDFLAGS="-L/output/lib" \
+./Configure \
+--cross-compile-prefix=$MUSL_TARGET- \
+-static \
+no-shared no-engine zlib \
+--prefix=/output \
+$(if echo "$MUSL_TARGET" | grep 64 >/dev/null; then echo linux-generic64; else echo linux-generic32; fi) && \
+make -j$(nproc) && \
+make install_sw && \
+$MUSL_TARGET-strip /output/bin/openssl
+
+CMD bash

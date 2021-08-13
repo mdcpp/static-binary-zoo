@@ -1,0 +1,31 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM debian:bullseye
+ARG MUSL_TARGET
+
+RUN mkdir /output && \
+export DEBIAN_FRONTEND=noninteractive && \
+sed -e 's/http:\/\/[^/]*/http:\/\/mirror.fsmg.org.nz/g' -i /etc/apt/sources.list && \
+apt-get update && \
+apt-get -y dist-upgrade && \
+apt-get -y autoremove && \
+apt-get install -y --no-install-recommends build-essential ca-certificates wget unzip flex bison autoconf && \
+apt-get clean
+RUN wget -O /tmp/musl-cross-make.zip https://github.com/richfelker/musl-cross-make/archive/refs/tags/v0.9.9.zip && \
+sha256sum /tmp/musl-cross-make.zip && \
+if [ "$(sha256sum /tmp/musl-cross-make.zip)" != "6cbe2f6ce92e7f8f3973786aaf0b990d0db380c0e0fc419a7d516df5bb03c891  /tmp/musl-cross-make.zip" ]; then \
+    echo "Invalid checksum of musl-cross-make.zip, giving up."; \
+exit 1; fi
+RUN mkdir /build && \
+cd /build && \
+unzip /tmp/musl-cross-make.zip && \
+cd musl-cross-make-* && \
+cp config.mak.dist config.mak && \
+echo "OUTPUT=/build/cross" >> config.mak && \
+echo "TARGET=$MUSL_TARGET" >> config.mak && \
+make -j $(nproc) && \
+make install && \
+cd .. && \
+rm -rf musl-cross-make-* && \
+rm /tmp/musl-cross-make.zip
+
+CMD ["bash"]
