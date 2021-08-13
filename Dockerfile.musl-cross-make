@@ -8,7 +8,7 @@ sed -e 's/http:\/\/[^/]*/http:\/\/mirror.fsmg.org.nz/g' -i /etc/apt/sources.list
 apt-get update && \
 apt-get -y dist-upgrade && \
 apt-get -y autoremove && \
-apt-get install -y --no-install-recommends build-essential ca-certificates wget unzip flex bison autoconf && \
+apt-get install -y --no-install-recommends build-essential ca-certificates wget unzip flex bison autoconf file && \
 apt-get clean
 RUN wget -O /tmp/musl-cross-make.zip https://github.com/richfelker/musl-cross-make/archive/refs/tags/v0.9.9.zip && \
 sha256sum /tmp/musl-cross-make.zip && \
