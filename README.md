@@ -35,6 +35,7 @@ Some goals of the project:
 * Ensure that only necessary modifications are made to packages to get them to build and be useful.
 * Up to date versions of things.
 * Try and make things builds relatively quickly and efficiently (e.g. auto-detect number of cores, skip unhelpful build stages etc)
+* Build tools with useful features enabled (e.g. socat has OpenSSL)
 
 And yet to be added:
 
