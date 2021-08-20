@@ -6,26 +6,18 @@ Download a file from a URL and validate the SHA256 checksum while downloading.
 Michael Fincham <michael@hotplate.co.nz> 2021-08-20
 """
 
-import sys
-import os
 import argparse
 import hashlib
-import urllib.request
+import os
+import sys
 import tempfile
+import urllib.request
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "url", help="URL to download from"
-    )
-    parser.add_argument(
-        "destination",
-        help="destination file"
-    )
-    parser.add_argument(
-        "sha256sum",
-        help="SHA256 checksum to match again"
-    )
+    parser.add_argument("url", help="URL to download from")
+    parser.add_argument("destination", help="destination file")
+    parser.add_argument("sha256sum", help="SHA256 checksum to match again")
     args = parser.parse_args()
 
     block_size = 1024 * 1024
@@ -46,6 +38,9 @@ if __name__ == "__main__":
         if checksum.hexdigest() == sha256sum:
             os.link(f.name, args.destination)
         else:
-            sys.stderr.write("error: checksum didn't match for '%s', not saving file. got %s and expected %s.\n" % (args.url, checksum.hexdigest(), sha256sum))
+            sys.stderr.write(
+                "error: checksum didn't match for '%s', not saving file. got %s and expected %s.\n"
+                % (args.url, checksum.hexdigest(), sha256sum)
+            )
             return_code = 1
     sys.exit(return_code)
