@@ -1,6 +1,6 @@
 # static-binary-zoo
 
-A set of Dockerfiles to statically cross-compile various "hacker tools" using `musl-cross-make` (https://github.com/richfelker/musl-cross-make). This is a work in progress and I'll be adding recipes and further documentation over time.
+A set of Dockerfiles to statically cross-compile various "hacker tools" using `musl-cross-make` (https://github.com/richfelker/musl-cross-make). This is a work in progress, and I'll be adding recipes and further documentation over time.
 
 ## Usage
 
@@ -24,7 +24,7 @@ You can build individual binaries by specifying the recipe name as an argument t
 
 More tools and documentation will be added over time.
 
-To validate that all your binaries came out right, run `make check`. This will list any binariesin the `output` directory which don't seem to have been statically linked.
+To validate that all your binaries came out right, run `make check`. This will list any binaries in the `output` directory which don't seem to have been statically linked.
 
 ## Rationale
 
