@@ -2,12 +2,10 @@ ARG MUSL_TARGET=x86_64-linux-musl
 FROM musl-cross-make-$MUSL_TARGET
 ARG MUSL_TARGET
 
-RUN cd /build && \
-wget -O source.tar.gz https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.gz && \
-tar xf source.tar.gz
-
+WORKDIR /build
+RUN download https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.gz source.tar.gz 4e6ce03e0336e8b4a3d6c2b70b1c5e18590a5673a98186da90d4f33c23defc09 && tar xf source.tar.gz
 RUN export PATH=/build/cross/bin:$PATH && \
-cd /build/pcre-* && \
+cd pcre-* && \
 CC="$MUSL_TARGET-gcc" \
 CFLAGS="-fPIC -static -frandom-seed=pulse" \
 ./configure \

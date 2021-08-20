@@ -5,12 +5,10 @@ ARG MUSL_TARGET
 
 COPY --from=libpcap /output /output
 
-RUN cd /build && \
-wget -O source.tar.gz https://www.tcpdump.org/release/tcpdump-4.99.1.tar.gz && \
-tar xf source.tar.gz
-
+WORKDIR /build
+RUN download https://www.tcpdump.org/release/tcpdump-4.99.1.tar.gz source.tar.gz 79b36985fb2703146618d87c4acde3e068b91c553fb93f021a337f175fd10ebe && tar xf source.tar.gz
 RUN export PATH=/build/cross/bin:$PATH && \
-cd /build/tcpdump-* && \ 
+cd tcpdump-* && \ 
 CC="${MUSL_TARGET}-gcc" \
 CFLAGS="-static -frandom-seed=pulse -I/output/include" \
 LDFLAGS="-L/output/lib" \
