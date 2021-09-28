@@ -16,8 +16,6 @@ You can build individual binaries by specifying the recipe name as an argument t
 
 * `busybox-1.33.1`
 * `curl-7.79.1`
-* `expat-2.4.1`
-* `gettext-0.21`
 * `git-2.33.0` (git binary needs to be renamed to `git` to work)
 * `loggedfs-0.9`
 * `nmap-7.90`
