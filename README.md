@@ -6,9 +6,9 @@ A set of Dockerfiles to statically cross-compile various "hacker tools" using [m
 
 Run `make MUSL_TARGET=some_target_tuple` to compile everything. Tested targets so far:
 
-* x86_64-linux-musl
-* mips-linux-muslsf
-* mipsel-linux-muslsf
+* `x86_64-linux-musl`
+* `mips-linux-muslsf`
+* `mipsel-linux-muslsf`
 
 But others are very likely to work. Building everything currently needs about 2GB of disk per target and it helps to have a big machine with NVMe storage and plenty of RAM. A complete build for a single architecture currently takes about 15 minutes on a Ryzen 4750U.
 
