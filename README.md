@@ -1,6 +1,6 @@
 # static-binary-zoo
 
-A set of Dockerfiles to statically cross-compile various "hacker tools" using `musl-cross-make` (https://github.com/richfelker/musl-cross-make). This is a work in progress and I'll be adding recipes and further documentation over time.
+A set of Dockerfiles to statically cross-compile various "hacker tools" using `musl-cross-make` (https://github.com/richfelker/musl-cross-make). This is a work in progress, and I'll be adding recipes and further documentation over time.
 
 ## Usage
 
@@ -8,10 +8,11 @@ Run `make MUSL_TARGET=some_target_tuple` to compile everything. Tested targets s
 
 * x86_64-linux-musl
 * mips-linux-muslsf
+* mipsel-linux-muslsf
 
-But others are very likely to work. Building everything currently needs about 2GB per target and it helps to have a big Ryzen machine with NVMe storage and plenty of RAM and so on.
+But others are very likely to work. Building everything currently needs about 2GB of disk per target and it helps to have a big machine with NVMe storage and plenty of RAM. A complete build for a single architecture currently takes about 15 minutes on a Ryzen 4750U.
 
-You can build individual binaries by specifying it as an argument to `make` and the dependencies will be worked out for you. At the moment there are recipes for these tools:
+You can build individual binaries by specifying the recipe name as an argument to `make`. Dependency resolution will be handled automatically. These recipes are included at the moment:
 
 * `busybox-1.33.1`
 * `curl-7.79.1`
@@ -27,24 +28,23 @@ You can build individual binaries by specifying it as an argument to `make` and 
 
 More tools and documentation will be added over time.
 
-To validate that all your binaries came out right, run `make check`. If everything is fine then nothing will be listed.
+To validate that all your binaries came out right, run `make check`. This will list any binaries in the `output` directory which don't seem to have been statically linked.
 
 ## Rationale
 
-There are numerous projects and approaches to building static tool binaries, but this one is mine. Sometimes you just find yourself on a little endian softfloat MIPS box and you really need that nmap.
+There are numerous projects and approaches for building static tool binaries, but this one is mine. Sometimes you just find yourself on a little-endian softfloat MIPS box and you really need a specific tool!
 
 Some goals of the project:
 
-* Re-use dependencies and earlier build stages where possible.
-* Ensure that only necessary modifications are made to packages to get them to build and be useful.
-* Up to date versions of things.
+* Re-use dependencies between recipes where possible.
+* Ensure that only the necessary modifications are made to packages to get them to build and be useful.
+* Up-to-date versions.
 * Try and make things builds relatively quickly and efficiently (e.g. auto-detect number of cores, skip unhelpful build stages etc)
-* Build tools with useful features enabled (e.g. socat has OpenSSL)
+* Build tools with useful features enabled (e.g. `socat` has `OpenSSL`)
 
 And yet to be added:
 
 * Update notification feature (this may involve switching package sources to come from Debian).
-* More pinned hashes for dependencies.
 
 ## Feedback? Questions?
 
