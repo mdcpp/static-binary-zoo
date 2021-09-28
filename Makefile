@@ -3,11 +3,13 @@ MUSL_TARGET ?= x86_64-linux-musl
 DOCKER_BUILD = docker build --build-arg MUSL_TARGET=$(MUSL_TARGET) -f Dockerfile.$@ -t $@-$(MUSL_TARGET) .
 GRABBY_HANDS = docker run --rm --mount type=bind,source=$(shell pwd)/output/$(MUSL_TARGET),target=/grabby $@-$(MUSL_TARGET) install -g $(shell id -g) -o $(shell id -u) 
 
-all: socat-1.7.4.1 nmap-7.90 tcpdump-4.99.1 openssl-1.1.1k
+all: socat-1.7.4.1 nmap-7.90 tcpdump-4.99.1 openssl-1.1.1k curl-7.79.1 git-2.33.0
 
 check:
 	@echo "These binaries are not built properly:"
-	@echo $(shell find output/ -type f -exec file {} \; | grep -E -v "statically linked, stripped$$")
+	@echo $(shell file output/*/* | grep -E -v "statically linked, stripped$$")
+
+## Dependencies
 
 musl-cross-make:
 	mkdir -p output/$(MUSL_TARGET)
@@ -25,10 +27,22 @@ zlib-1.2.11: musl-cross-make
 pcre-8.45: musl-cross-make
 	$(DOCKER_BUILD)
 
+expat-2.4.1: musl-cross-make
+	$(DOCKER_BUILD)
+
+# Produces both libcurl and the curl binary.
+curl-7.79.1: openssl-1.1.1k
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/curl /grabby/$@
+
 libxml2-2.9.12: musl-cross-make
 	$(DOCKER_BUILD)
 
 libpcap-1.10.1: musl-cross-make
+	$(DOCKER_BUILD)
+
+# Nothing uses this currently, it's an optional dependency for git though.
+gettext-0.21: musl-cross-make
 	$(DOCKER_BUILD)
 
 # libfuse >= 3.x uses meson/ninja as a build system so for the time being I am sticking with 2.x
@@ -40,9 +54,12 @@ openssl-0.9.8zh: zlib-1.2.11
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/openssl /grabby/$@
 
+# Produces both libssl and the openssl command line tool.
 openssl-1.1.1k: zlib-1.2.11
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/openssl /grabby/$@
+
+## Tools
 
 socat-1.7.4.1: readline-8.1 openssl-1.1.1k
 	$(DOCKER_BUILD)
@@ -64,3 +81,7 @@ busybox-1.33.1: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/busybox /grabby/$@
 
+# Other git tools (e.g. git-shell) are built but not copied out at the moment. The 'git-versuin' binary will need to be renamed to just 'git' to work.
+git-2.33.0: expat-2.4.1 zlib-1.2.11 openssl-1.1.1k curl-7.79.1
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/git /grabby/$@

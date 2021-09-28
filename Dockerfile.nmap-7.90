@@ -7,12 +7,10 @@ ARG MUSL_TARGET
 COPY --from=libpcap /output /output
 COPY --from=openssl /output /output
 
-RUN cd /build && \
-wget -O source.tar.gz https://nmap.org/dist/nmap-7.92.tgz && \
-tar xf source.tar.gz
-
+WORKDIR /build
+RUN download https://nmap.org/dist/nmap-7.92.tgz source.tar.gz 064183ea642dc4c12b1ab3b5358ce1cef7d2e7e11ffa2849f16d339f5b717117 && tar xf source.tar.gz
 RUN export PATH=/build/cross/bin:$PATH && \
-cd /build/nmap-* && \
+cd nmap-* && \
 CC="${MUSL_TARGET}-gcc -static -fPIC" \
 CXX="${MUSL_TARGET}-g++ -static -fPIC -static-libstdc++" \
 CFLAGS="-frandom-seed=pulse -I/output/include" \

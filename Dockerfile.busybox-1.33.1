@@ -2,13 +2,11 @@ ARG MUSL_TARGET=x86_64-linux-musl
 FROM musl-cross-make-${MUSL_TARGET}
 ARG MUSL_TARGET
 
-RUN cd /build && \
-wget -O source.tar.bz2 https://busybox.net/downloads/busybox-1.33.1.tar.bz2 && \
-tar xf source.tar.bz2
-
+WORKDIR /build
+RUN download https://busybox.net/downloads/busybox-1.33.1.tar.bz2 source.tar.bz2 12cec6bd2b16d8a9446dd16130f2b92982f1819f6e1c5f5887b6db03f5660d28 && tar xf source.tar.bz2
 RUN export PATH=/build/cross/bin:$PATH && \
 mkdir -p /output/bin && \
-cd /build/busybox-* && \
+cd busybox-* && \
 export CFLAGS="-frandom-seed=pulse -I/output/include" && \
 export LDFLAGS="--static -L/output/lib" && \
 make defconfig && \

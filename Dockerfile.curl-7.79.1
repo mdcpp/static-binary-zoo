@@ -1,0 +1,32 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
+FROM musl-cross-make-$MUSL_TARGET
+ARG MUSL_TARGET
+
+COPY --from=openssl /output /output
+
+# curl really doesn't like keeping -static in the CFLAGS / CPPFLAGS so this uses a wrapper script around CC instead
+WORKDIR /build
+RUN download https://curl.se/download/curl-7.79.1.tar.gz source.tar.gz 370b11201349816287fb0ccc995e420277fbfcaf76206e309b3f60f0eda090c2 && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:$PATH && \
+cd curl-* && \
+echo '#!/bin/sh\nexec $MUSL_TARGET-gcc -static "$@"' > /usr/local/bin/gcc && \
+chmod +x /usr/local/bin/gcc && \
+export CC="/usr/local/bin/gcc" && \
+export CPPFLAGS="-I/output/include -frandom-seed=pulse" && \
+export LDFLAGS="-L/output/lib" && \
+./configure \
+--disable-ldap \
+--disable-shared \
+--enable-ipv6 \
+--enable-static \
+--enable-threaded-resolver \
+--host=$($MUSL_TARGET-gcc -dumpmachine) \
+--prefix=/output \
+--with-ca-fallback \
+--with-openssl && \
+make -j$(nproc) && \
+make install && \
+${MUSL_TARGET}-strip /output/bin/curl
+
+CMD bash

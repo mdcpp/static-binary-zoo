@@ -9,12 +9,10 @@ COPY --from=openssl /output /output
 COPY --from=readline /output /output
 COPY --from=zlib /output /output
 
-RUN cd /build && \
-wget -O source.tar.gz http://www.dest-unreach.org/socat/download/socat-1.7.4.1.tar.gz && \
-tar xf source.tar.gz
-
+WORKDIR /build
+RUN download http://www.dest-unreach.org/socat/download/socat-1.7.4.1.tar.gz source.tar.gz 0c7e635070af1b9037fd96869fc45eacf9845cb54547681de9d885044538736d && tar xf source.tar.gz
 RUN export PATH=/build/cross/bin:$PATH && \
-cd /build/socat-* && \
+cd socat-* && \
 CC="${MUSL_TARGET}-gcc" \
 CPPFLAGS="-static -frandom-seed=pulse -I/output/include" \
 LDFLAGS="-L/output/lib" \

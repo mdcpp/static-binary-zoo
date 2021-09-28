@@ -14,6 +14,10 @@ But others are very likely to work. Building everything currently needs about 2G
 You can build individual binaries by specifying it as an argument to `make` and the dependencies will be worked out for you. At the moment there are recipes for these tools:
 
 * `busybox-1.33.1`
+* `curl-7.79.1`
+* `expat-2.4.1`
+* `gettext-0.21`
+* `git-2.33.0` (git binary needs to be renamed to `git` to work)
 * `loggedfs-0.9`
 * `nmap-7.90`
 * `openssl-0.9.8zh` (insecure, not for general use)
