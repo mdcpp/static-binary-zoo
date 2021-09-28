@@ -1,0 +1,23 @@
+image: alpine/edge
+packages:
+  - docker
+sources:
+  - https://git.sr.ht/~fincham/static-build-zoo
+tasks:
+ - build: |
+     sudo service docker start
+     sleep 3
+     sudo chmod 666 /var/run/docker.sock
+     cd static-build-zoo || exit 1
+     make all
+artifacts:
+  - static-build-zoo/output/x86_64-linux-musl/busybox-1.33.1
+  - static-build-zoo/output/x86_64-linux-musl/curl-7.79.1
+  - static-build-zoo/output/x86_64-linux-musl/expat-2.4.1
+  - static-build-zoo/output/x86_64-linux-musl/gettext-0.21
+  - static-build-zoo/output/x86_64-linux-musl/git-2.33.0
+  - static-build-zoo/output/x86_64-linux-musl/loggedfs-0.9
+  - static-build-zoo/output/x86_64-linux-musl/nmap-7.90
+  - static-build-zoo/output/x86_64-linux-musl/openssl-1.1.1k
+  - static-build-zoo/output/x86_64-linux-musl/socat-1.7.4.1
+  - static-build-zoo/output/x86_64-linux-musl/tcpdump-4.99.1

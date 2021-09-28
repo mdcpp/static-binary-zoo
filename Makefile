@@ -3,7 +3,7 @@ MUSL_TARGET ?= x86_64-linux-musl
 DOCKER_BUILD = docker build --build-arg MUSL_TARGET=$(MUSL_TARGET) -f Dockerfile.$@ -t $@-$(MUSL_TARGET) .
 GRABBY_HANDS = docker run --rm --mount type=bind,source=$(shell pwd)/output/$(MUSL_TARGET),target=/grabby $@-$(MUSL_TARGET) install -g $(shell id -g) -o $(shell id -u) 
 
-all: socat-1.7.4.1 nmap-7.90 tcpdump-4.99.1 openssl-1.1.1k curl-7.79.1 git-2.33.0
+all: busybox-1.33.1 curl-7.79.1 expat-2.4.1 gettext-0.21 git-2.33.0 loggedfs-0.9 nmap-7.90 openssl-1.1.1k socat-1.7.4.1 tcpdump-4.99.1
 
 check:
 	@echo "These binaries are not built properly:"
