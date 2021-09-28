@@ -13,8 +13,6 @@ tasks:
 artifacts:
   - static-binary-zoo/output/x86_64-linux-musl/busybox-1.33.1
   - static-binary-zoo/output/x86_64-linux-musl/curl-7.79.1
-  - static-binary-zoo/output/x86_64-linux-musl/expat-2.4.1
-  - static-binary-zoo/output/x86_64-linux-musl/gettext-0.21
   - static-binary-zoo/output/x86_64-linux-musl/git-2.33.0
   - static-binary-zoo/output/x86_64-linux-musl/loggedfs-0.9
   - static-binary-zoo/output/x86_64-linux-musl/nmap-7.90
