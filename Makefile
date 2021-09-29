@@ -65,7 +65,7 @@ socat-1.7.4.1: readline-8.1 openssl-1.1.1k
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/socat /grabby/$@
 
-nmap-7.90: openssl-1.1.1k libpcap-1.10.1
+nmap-7.90: openssl-1.1.1k libpcap-1.10.1 zlib-1.2.11 pcre-8.45
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/nmap /grabby/$@
 

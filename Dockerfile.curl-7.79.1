@@ -13,7 +13,7 @@ cd curl-* && \
 echo '#!/bin/sh\nexec $MUSL_TARGET-gcc -static "$@"' > /usr/local/bin/gcc && \
 chmod +x /usr/local/bin/gcc && \
 export CC="/usr/local/bin/gcc" && \
-export CFLAGS="-fPIC -frandom-seed=pulse" && \
+export CFLAGS="-frandom-seed=pulse" && \
 export CPPFLAGS="-I/output/include" && \
 export LDFLAGS="-L/output/lib" && \
 ./configure \

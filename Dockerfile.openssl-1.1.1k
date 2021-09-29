@@ -7,7 +7,7 @@ RUN download https://www.openssl.org/source/openssl-1.1.1k.tar.gz source.tar.gz 
 RUN export PATH=/build/cross/bin:$PATH && \
 cd openssl-* && \
 CC="gcc" \
-CFLAGS="-static -fPIC -frandom-seed=pulse -I/output/include" \
+CFLAGS="-static -frandom-seed=pulse -I/output/include" \
 LDFLAGS="-L/output/lib" \
 ./Configure \
 --cross-compile-prefix=$MUSL_TARGET- \

@@ -11,6 +11,6 @@ tasks:
      cd static-binary-zoo || exit 1
      make git-2.33.0
  - bundle: |
-     tar -C static-binary-zoo/output -z -c -v -f git-2.33.0.tar.gz *
+     tar -C static-binary-zoo -z -c -v -f git-2.33.0.tar.gz output
 artifacts:
   - git-2.33.0.tar.gz

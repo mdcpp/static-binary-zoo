@@ -7,8 +7,10 @@ RUN download https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.gz source.tar.gz 4e6ce0
 RUN export PATH=/build/cross/bin:$PATH && \
 cd pcre-* && \
 CC="$MUSL_TARGET-gcc" \
-CFLAGS="-fPIC -static -frandom-seed=pulse" \
+CFLAGS="-static -frandom-seed=pulse" \
 ./configure \
+--disable-shared \
+--enable-static \
 --host=$($MUSL_TARGET-gcc -dumpmachine) \
 --prefix=/output && \
 make -j$(nproc) && \

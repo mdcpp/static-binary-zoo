@@ -1,9 +1,13 @@
 ARG MUSL_TARGET=x86_64-linux-musl
+FROM pcre-8.45-${MUSL_TARGET} AS pcre
+FROM zlib-1.2.11-${MUSL_TARGET} AS zlib
 FROM libpcap-1.10.1-${MUSL_TARGET} AS libpcap
 FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
 FROM musl-cross-make-${MUSL_TARGET}
 ARG MUSL_TARGET
 
+COPY --from=pcre /output /output
+COPY --from=zlib /output /output
 COPY --from=libpcap /output /output
 COPY --from=openssl /output /output
 
@@ -11,13 +15,12 @@ WORKDIR /build
 RUN download https://nmap.org/dist/nmap-7.92.tgz source.tar.gz 064183ea642dc4c12b1ab3b5358ce1cef7d2e7e11ffa2849f16d339f5b717117 && tar xf source.tar.gz
 RUN export PATH=/build/cross/bin:$PATH && \
 cd nmap-* && \
-CC="${MUSL_TARGET}-gcc -static -fPIC" \
-CXX="${MUSL_TARGET}-g++ -static -fPIC -static-libstdc++" \
+CC="${MUSL_TARGET}-gcc -static" \
+CXX="${MUSL_TARGET}-g++ -static -static-libstdc++" \
 CFLAGS="-frandom-seed=pulse -I/output/include" \
-CPPFLAGS="-frandom-seed=pulse -I/output/include" \
 LDFLAGS="-L/output/lib" \
 ./configure \
--enable-shared=no \
+--enable-shared=no \
 --enable-static=yes \
 --prefix=/output \
 --with-pcap=linux \
@@ -27,6 +30,8 @@ LDFLAGS="-L/output/lib" \
 --without-nmap-update \
 --without-zenmap \
 --with-openssl=/output \
+--with-libz=/output \
+--with-libpcre=/output \
 --host=$($MUSL_TARGET-gcc -dumpmachine) && \
 make -j$(nproc) static && \
 make install && \
