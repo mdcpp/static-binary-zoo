@@ -1,0 +1,16 @@
+image: alpine/edge
+packages:
+  - docker
+sources:
+  - https://git.sr.ht/~fincham/static-binary-zoo
+tasks:
+ - build: |
+     sudo service docker start
+     sleep 3
+     sudo chmod 666 /var/run/docker.sock
+     cd static-binary-zoo || exit 1
+     make git-2.33.0
+ - bundle: |
+     tar -C static-binary-zoo/output -z -c -v -f git-2.33.0.tar.gz *
+artifacts:
+  - git-2.33.0.tar.gz

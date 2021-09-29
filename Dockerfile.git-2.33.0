@@ -1,24 +1,26 @@
 ARG MUSL_TARGET=x86_64-linux-musl
-FROM expat-2.4.1-${MUSL_TARGET} AS expat
 FROM zlib-1.2.11-${MUSL_TARGET} AS zlib
+FROM expat-2.4.1-${MUSL_TARGET} AS expat
 FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
 FROM curl-7.79.1-${MUSL_TARGET} AS curl
 FROM musl-cross-make-$MUSL_TARGET
 ARG MUSL_TARGET
 
-COPY --from=expat /output /output
 COPY --from=zlib /output /output
+COPY --from=expat /output /output
 COPY --from=openssl /output /output
-COPY --from=openssl /output /output
+COPY --from=curl /output /output
 
 # Avoid generating translations by dummying out msgfmt, also makes dependency on gettext optional
 WORKDIR /build
 RUN download https://github.com/git/git/archive/refs/tags/v2.33.0.tar.gz source.tar.gz ac8bb4bd4f689ddacd1f17c13e519c78d0f38ffc7c41dc24a4dbeb576bc88e91 && tar xf source.tar.gz
-RUN export PATH=/build/cross/bin:$PATH && \
+RUN export PATH=/build/cross/bin:/output/bin:$PATH && \
 cd git-* && \
 export CC="$MUSL_TARGET-gcc" && \
-export CFLAGS="-static -I/output/include -frandom-seed=pulse" && \
+export CFLAGS="-static -frandom-seed=pulse" && \
+export CPPFLAGS="-I/output/include" && \
 export LDFLAGS="-L/output/lib" && \
+export LIBS="-lssl -lcrypto -lz" && \
 make configure && \
 ./configure \
 --without-tcltk \
@@ -28,7 +30,7 @@ echo "#!/bin/sh\nexit 0" > /usr/local/bin/msgfmt && \
 chmod +x /usr/local/bin/msgfmt && \
 make -j$(nproc) && \
 make install && \
-rm /output/bin/git-cvsserver && \
-${MUSL_TARGET}-strip /output/bin/git-*
+cp /output/libexec/git-core/git-remote-http* /output/bin && \
+${MUSL_TARGET}-strip /output/bin/* || true
 
 CMD bash

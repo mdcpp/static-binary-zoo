@@ -7,7 +7,7 @@ all: busybox-1.33.1 curl-7.79.1 git-2.33.0 loggedfs-0.9 nmap-7.90 openssl-1.1.1k
 
 check:
 	@echo "These binaries are not built properly:"
-	@echo $(shell file output/*/* | grep -E -v "statically linked, stripped$$")
+	@echo "$(shell file output/*/* | grep -E -v "statically linked, stripped$$")"
 
 ## Dependencies
 
@@ -55,7 +55,7 @@ openssl-0.9.8zh: zlib-1.2.11
 	$(GRABBY_HANDS) /output/bin/openssl /grabby/$@
 
 # Produces both libssl and the openssl command line tool.
-openssl-1.1.1k: zlib-1.2.11
+openssl-1.1.1k: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/openssl /grabby/$@
 
@@ -81,7 +81,9 @@ busybox-1.33.1: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/busybox /grabby/$@
 
-# Other git tools (e.g. git-shell) are built but not copied out at the moment. The 'git-versuin' binary will need to be renamed to just 'git' to work.
-git-2.33.0: expat-2.4.1 zlib-1.2.11 openssl-1.1.1k curl-7.79.1
+# Other git tools (e.g. git-shell) are built but not copied out at the moment. The 'git-version' binary will need to be renamed to just 'git' to work.
+git-2.33.0: expat-2.4.1 openssl-1.1.1k curl-7.79.1 zlib-1.2.11
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/git /grabby/$@
+	$(GRABBY_HANDS) /output/bin/git-remote-http /grabby/git-remote-http-2.33.0
+	$(GRABBY_HANDS) /output/bin/git-remote-https /grabby/git-remote-https-2.33.0
