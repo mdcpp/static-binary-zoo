@@ -3,11 +3,11 @@ MUSL_TARGET ?= x86_64-linux-musl
 DOCKER_BUILD = docker build --build-arg MUSL_TARGET=$(MUSL_TARGET) -f Dockerfile.$@ -t $@-$(MUSL_TARGET) .
 GRABBY_HANDS = docker run --rm --mount type=bind,source=$(shell pwd)/output/$(MUSL_TARGET),target=/grabby $@-$(MUSL_TARGET) install -g $(shell id -g) -o $(shell id -u) 
 
-all: busybox-1.33.1 curl-7.79.1 git-2.33.0 loggedfs-0.9 nmap-7.90 openssl-1.1.1k socat-1.7.4.1 tcpdump-4.99.1
+all: busybox-1.33.1 curl-7.79.1 loggedfs-0.9 nmap-7.90 openssl-1.1.1k socat-1.7.4.1 tcpdump-4.99.1
 
 check:
 	@echo "These binaries are not built properly:"
-	@echo "$(shell file output/*/* | grep -E -v "statically linked, stripped$$")"
+	@echo "$(shell file output/*/* | grep -v "grep -E -v "statically linked, stripped$$")"
 
 ## Dependencies
 
@@ -81,9 +81,10 @@ busybox-1.33.1: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/busybox /grabby/$@
 
-# Other git tools (e.g. git-shell) are built but not copied out at the moment. The 'git-version' binary will need to be renamed to just 'git' to work.
+# By default just build the basic 'git' binary. If you want "everything" then set GIT_FULL as an environment variable. The 'git-versionnumber' binary will need to be renamed to just 'git' to work.
 git-2.33.0: expat-2.4.1 openssl-1.1.1k curl-7.79.1 zlib-1.2.11
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/git /grabby/$@
-	$(GRABBY_HANDS) /output/bin/git-remote-http /grabby/git-remote-http-2.33.0
-	$(GRABBY_HANDS) /output/bin/git-remote-https /grabby/git-remote-https-2.33.0
+ifdef GIT_FULL
+	$(GRABBY_HANDS) /output/full.tar.gz /grabby/$@.tar.gz
+endif

@@ -29,8 +29,11 @@ make configure && \
 echo "#!/bin/sh\nexit 0" > /usr/local/bin/msgfmt && \
 chmod +x /usr/local/bin/msgfmt && \
 make -j$(nproc) && \
+export BEFORE_INSTALL=$(find /output/bin/ -type f | xargs) && \
 make install && \
-cp /output/libexec/git-core/git-remote-http* /output/bin && \
-${MUSL_TARGET}-strip /output/bin/* || true
+rm -- ${BEFORE_INSTALL} && \
+${MUSL_TARGET}-strip /output/bin/* || true && \
+${MUSL_TARGET}-strip /output/libexec/* || true && \
+tar -z -c -f /output/full.tar.gz -C /output --transform 's,^,git/,' bin libexec
 
 CMD bash
