@@ -7,7 +7,7 @@ all: busybox-1.33.1 curl-7.79.1 dropbear-2020.81 loggedfs-0.9 nmap-7.90 openssl-
 
 check:
 	@echo "These binaries are not built properly:"
-	@echo "$(shell file output/*/* | grep -v "grep -E -v "statically linked, stripped$$")"
+	@echo "$(shell file output/*/* | grep -E -v "\.tar\.gz|statically linked, stripped$$")"
 
 ## Dependencies
 
