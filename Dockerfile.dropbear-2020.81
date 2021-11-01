@@ -1,0 +1,23 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM zlib-1.2.11-${MUSL_TARGET} AS zlib
+FROM musl-cross-make-$MUSL_TARGET
+ARG MUSL_TARGET
+
+COPY --from=zlib /output /output
+
+WORKDIR /build
+RUN download https://github.com/mkj/dropbear/archive/refs/tags/DROPBEAR_2020.81.tar.gz source.tar.gz c7cfc687088daca392b780f4af87d92ec1803f062c4c984f02062adc41b8147f && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:$PATH && \
+cd dropbear-* && \
+autoconf && \
+autoheader && \
+export CC="${MUSL_TARGET}-gcc" && \
+export CFLAGS="-frandom-seed=pulse" && \
+./configure --host=$($CC -dumpmachine) --enable-static --disable-syslog --with-zlib=/output --prefix=/output && \
+make -j$(nproc) PROGRAMS="dropbearkey dbclient dropbear" && \
+make install && \ 
+${MUSL_TARGET}-strip /output/bin/dbclient && \
+${MUSL_TARGET}-strip /output/bin/dropbearkey && \
+${MUSL_TARGET}-strip /output/sbin/dropbear
+
+CMD bash

@@ -17,7 +17,8 @@ You can build individual binaries by specifying the recipe name as an argument t
 
 * `busybox-1.33.1`
 * `curl-7.79.1`
-* `git-2.33.0` (git binary needs to be renamed to `git` to work)
+* `dropbear-2020.81` (`dropbear`, `dropbearclient` and `dropbearkey`)
+* `git-2.33.0` (`git-...` binary needs to be renamed to just `git` to work)
 * `loggedfs-0.9`
 * `nmap-7.90`
 * `openssl-0.9.8zh` (insecure, not for general use)

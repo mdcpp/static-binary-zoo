@@ -3,7 +3,7 @@ MUSL_TARGET ?= x86_64-linux-musl
 DOCKER_BUILD = docker build --build-arg MUSL_TARGET=$(MUSL_TARGET) -f Dockerfile.$@ -t $@-$(MUSL_TARGET) .
 GRABBY_HANDS = docker run --rm --mount type=bind,source=$(shell pwd)/output/$(MUSL_TARGET),target=/grabby $@-$(MUSL_TARGET) install -g $(shell id -g) -o $(shell id -u) 
 
-all: busybox-1.33.1 curl-7.79.1 loggedfs-0.9 nmap-7.90 openssl-1.1.1k socat-1.7.4.1 tcpdump-4.99.1
+all: busybox-1.33.1 curl-7.79.1 dropbear-2020.81 loggedfs-0.9 nmap-7.90 openssl-1.1.1k socat-1.7.4.1 tcpdump-4.99.1
 
 check:
 	@echo "These binaries are not built properly:"
@@ -60,6 +60,12 @@ openssl-1.1.1k: musl-cross-make
 	$(GRABBY_HANDS) /output/bin/openssl /grabby/$@
 
 ## Tools
+
+dropbear-2020.81: zlib-1.2.11
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/dbclient /grabby/dbclient-2020.81
+	$(GRABBY_HANDS) /output/bin/dropbearkey /grabby/dropbearkey-2020.81
+	$(GRABBY_HANDS) /output/sbin/dropbear /grabby/$@
 
 socat-1.7.4.1: readline-8.1 openssl-1.1.1k
 	$(DOCKER_BUILD)

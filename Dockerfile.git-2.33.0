@@ -33,7 +33,7 @@ export BEFORE_INSTALL=$(find /output/bin/ -type f | xargs) && \
 make install && \
 rm -- ${BEFORE_INSTALL} && \
 ${MUSL_TARGET}-strip /output/bin/* || true && \
-${MUSL_TARGET}-strip /output/libexec/* || true && \
+${MUSL_TARGET}-strip /output/libexec/git-core/* || true && \
 tar -z -c -f /output/full.tar.gz -C /output --transform 's,^,git/,' bin libexec
 
 CMD bash
