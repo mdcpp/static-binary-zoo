@@ -14,9 +14,10 @@ autoheader && \
 export CC="${MUSL_TARGET}-gcc" && \
 export CFLAGS="-frandom-seed=pulse" && \
 ./configure --host=$($CC -dumpmachine) --enable-static --disable-syslog --with-zlib=/output --prefix=/output && \
-make -j$(nproc) PROGRAMS="dropbearkey dbclient dropbear" && \
+make -j$(nproc) PROGRAMS="dbclient dropbearconvert dropbearkey dropbear" && \
 make install && \ 
 ${MUSL_TARGET}-strip /output/bin/dbclient && \
+${MUSL_TARGET}-strip /output/bin/dropbearconvert && \
 ${MUSL_TARGET}-strip /output/bin/dropbearkey && \
 ${MUSL_TARGET}-strip /output/sbin/dropbear
 

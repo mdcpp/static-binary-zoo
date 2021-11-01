@@ -64,6 +64,7 @@ openssl-1.1.1k: musl-cross-make
 dropbear-2020.81: zlib-1.2.11
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/dbclient /grabby/dbclient-2020.81
+	$(GRABBY_HANDS) /output/bin/dropbearconvert /grabby/dropbearconvert-2020.81
 	$(GRABBY_HANDS) /output/bin/dropbearkey /grabby/dropbearkey-2020.81
 	$(GRABBY_HANDS) /output/sbin/dropbear /grabby/$@
 
