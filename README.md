@@ -11,7 +11,7 @@ Run `make MUSL_TARGET=some_target_tuple` to compile everything. Tested targets s
 * `mipsel-linux-muslsf`
 * `x86_64-linux-musl`
 
-But others are very likely to work. Building everything currently needs about 2GB of disk per target and it helps to have a big machine with NVMe storage and plenty of RAM. A complete build for a single architecture currently takes about 15 minutes on a Ryzen 4750U.
+But others are very likely to work. Building everything currently needs about 2GB of disk per target and it helps to have a big machine with NVMe storage and plenty of RAM. A complete build for a single architecture currently takes about 15 minutes on a Ryzen 4750U, or a bit less on an Apple M1.
 
 You can build individual binaries by specifying the recipe name as an argument to `make`. Dependency resolution will be handled automatically. These recipes are included at the moment:
 
