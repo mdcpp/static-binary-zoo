@@ -27,6 +27,12 @@ zlib-1.2.11: musl-cross-make
 pcre-8.45: musl-cross-make
 	$(DOCKER_BUILD)
 
+libnl-3.2.25: musl-cross-make
+	$(DOCKER_BUILD)
+
+protobuf-3.19.1: musl-cross-make
+	$(DOCKER_BUILD)
+
 expat-2.4.1: musl-cross-make
 	$(DOCKER_BUILD)
 
@@ -87,6 +93,10 @@ loggedfs-0.9: pcre-8.45 libxml2-2.9.12 fuse-2.9.9
 busybox-1.33.1: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/busybox /grabby/$@
+
+nsjail-3.0: libnl-3.2.25 protobuf-3.19.1
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /build/nsjail-3.0/nsjail /grabby/$@
 
 # By default just build the basic 'git' binary. If you want "everything" then set GIT_FULL as an environment variable. The 'git-versionnumber' binary will need to be renamed to just 'git' to work.
 git-2.33.0: expat-2.4.1 openssl-1.1.1k curl-7.79.1 zlib-1.2.11

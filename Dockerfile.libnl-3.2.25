@@ -1,0 +1,19 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM musl-cross-make-$MUSL_TARGET
+ARG MUSL_TARGET
+
+WORKDIR /build
+RUN download https://www.infradead.org/~tgr/libnl/files/libnl-3.2.25.tar.gz source.tar.gz 8beb7590674957b931de6b7f81c530b85dc7c1ad8fbda015398bc1e8d1ce8ec5 && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:$PATH && \
+cd libnl-* && \
+CC="$MUSL_TARGET-gcc" \
+CFLAGS="-static -frandom-seed=pulse" \
+./configure \
+--disable-shared \
+--enable-static \
+--host=$($MUSL_TARGET-gcc -dumpmachine) \
+--prefix=/output && \
+make -j$(nproc) && \
+make install
+
+CMD bash

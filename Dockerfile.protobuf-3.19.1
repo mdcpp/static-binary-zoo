@@ -1,0 +1,20 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM musl-cross-make-$MUSL_TARGET
+ARG MUSL_TARGET
+
+WORKDIR /build
+RUN download https://github.com/protocolbuffers/protobuf/releases/download/v3.19.1/protobuf-cpp-3.19.1.tar.gz source.tar.gz 645192532f28254152b51c01868efdf9b766b1dbe49c77cccd6efcdb2d7c7bc2 && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:$PATH && \
+cd protobuf-* && \
+export CC="$MUSL_TARGET-gcc" && \
+export CXX="$MUSL_TARGET-g++" && \
+export CFLAGS="-static -frandom-seed=pulse" && \
+./configure \
+--disable-shared \
+--enable-static \
+--host=$($MUSL_TARGET-gcc -dumpmachine) \
+--prefix=/output && \
+make -j$(nproc) && \
+make install
+
+CMD bash

@@ -1,0 +1,36 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM libnl-3.2.25-${MUSL_TARGET} AS libnl
+FROM protobuf-3.19.1-${MUSL_TARGET} AS protobuf
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=protobuf /output /output
+COPY --from=libnl /output /output
+
+WORKDIR /build
+RUN download https://github.com/google/nsjail/archive/refs/tags/3.0.tar.gz source.tar.gz cfa66d3ed136b2e221752287b95e544915e8a6760aa866f023b604d14a374919 && tar xf source.tar.gz
+RUN download https://github.com/google/kafel/archive/refs/tags/20200831.tar.gz kafel.tar.gz dc6a541e4699acb2ac76128142780604452694d747dfd31a809a90506f965d7e && tar xf kafel.tar.gz
+RUN download https://github.com/protocolbuffers/protobuf/releases/download/v3.19.1/protoc-3.19.1-linux-x86_64.zip protoc.zip 4b18a69b3093432ee0531bc9bf3c4114f81bde1670ade2875f694180ac8bd7f6 && unzip protoc.zip
+COPY patches/nsjail-3.0 /build/patches
+RUN export PATH=/build/cross/bin:$PATH:/output/bin && \
+mkdir -p /output/bin && \
+mkdir -p /output/include/sys && \
+echo "#!/bin/sh\nexit 0" > /output/bin/pkg-config && \
+chmod 0755 /output/bin/pkg-config && \
+cp /build/patches/queue.h /output/include/sys && \
+cp bin/protoc /output/bin && \
+cp -r kafel-*/* nsjail-*/kafel && \
+cd nsjail-* && \
+find /output && \
+sed -e 's/-Werror//' -e 's/-pie//' -e 's/-fPIE//' -i Makefile && \
+sed -e 's/YYUSE/YY_USE/' -i kafel/src/parser.y && \
+sed -e 's/^TARGET=.*/TARGET=${STATIC_TARGET}/' -i kafel/src/Makefile && \
+export CC="$MUSL_TARGET-gcc -static" && \
+export CXX="$MUSL_TARGET-g++ -static" && \
+export CFLAGS="-I/output/include -I/output/include/libnl3 -I/output/include/google -static -frandom-seed=pulse" && \
+export COMMON_FLAGS="-static -I/output/include -I/output/include/libnl3 -I/output/include/google" && \
+export LDFLAGS="-L/output/lib -pthread -lprotobuf -lnl-route-3 -lnl-3" && \
+make -j$(nproc) && \
+${MUSL_TARGET}-strip nsjail
+
+CMD bash
