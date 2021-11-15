@@ -1,4 +1,5 @@
 MUSL_TARGET ?= x86_64-linux-musl
+UNAME_M := $(shell uname -m)
 
 DOCKER_BUILD = docker build --build-arg MUSL_TARGET=$(MUSL_TARGET) -f Dockerfile.$@ -t $@-$(MUSL_TARGET) .
 GRABBY_HANDS = docker run --rm --mount type=bind,source=$(shell pwd)/output/$(MUSL_TARGET),target=/grabby $@-$(MUSL_TARGET) install -g $(shell id -g) -o $(shell id -u) 
@@ -94,6 +95,7 @@ busybox-1.33.1: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/busybox /grabby/$@
 
+# Currently this will only build on 64 bit ARM, 32 or 64 bit x86. This will be sorted out later.
 nsjail-3.0: libnl-3.2.25 protobuf-3.19.1
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /build/nsjail-3.0/nsjail /grabby/$@

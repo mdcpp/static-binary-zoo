@@ -1,3 +1,5 @@
+/* static-binary-zoo note: musl doesn't include a queue.h implementation so here's one from NetBSD that works */
+
 /*	$NetBSD: queue.h,v 1.68 2014/11/19 08:10:01 uebayasi Exp $	*/
 
 /*
