@@ -21,14 +21,13 @@ cp /build/patches/queue.h /output/include/sys && \
 cp bin/protoc /output/bin && \
 cp -r kafel-*/* nsjail-*/kafel && \
 cd nsjail-* && \
-find /output && \
 sed -e 's/-Werror//' -e 's/-pie//' -e 's/-fPIE//' -i Makefile && \
 sed -e 's/YYUSE/YY_USE/' -i kafel/src/parser.y && \
 sed -e 's/^TARGET=.*/TARGET=${STATIC_TARGET}/' -i kafel/src/Makefile && \
 export CC="$MUSL_TARGET-gcc -static" && \
-export CXX="$MUSL_TARGET-g++ -static -static-libstdc++" && \
-export CFLAGS="-I/output/include -I/output/include/libnl3 -I/output/include/google -static -frandom-seed=pulse" && \
-export COMMON_FLAGS="-static -I/output/include -I/output/include/libnl3 -I/output/include/google" && \
+export CXX="$MUSL_TARGET-g++ -static" && \
+export CFLAGS="-I/output/include -I/output/include/libnl3 -I/output/include/google -frandom-seed=pulse" && \
+export CXXFLAGS="-static-libstdc++ ${CFLAGS}" && \
 export LDFLAGS="-L/output/lib -pthread -lprotobuf -lnl-route-3 -lnl-3" && \
 make -j$(nproc) && \
 ${MUSL_TARGET}-strip nsjail
