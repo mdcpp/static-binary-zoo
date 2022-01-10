@@ -39,7 +39,7 @@ if __name__ == "__main__":
             os.link(f.name, args.destination)
         else:
             sys.stderr.write(
-                "error: checksum didn't match for '%s', not saving file. got %s and expected %s.\n"
+                "\nerror: checksum didn't match for '%s', not saving file.\ngot %s and expected %s.\n"
                 % (args.url, checksum.hexdigest(), sha256sum)
             )
             return_code = 1

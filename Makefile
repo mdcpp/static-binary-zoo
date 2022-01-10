@@ -4,7 +4,7 @@ UNAME_M := $(shell uname -m)
 DOCKER_BUILD = docker build --build-arg MUSL_TARGET=$(MUSL_TARGET) -f Dockerfile.$@ -t $@-$(MUSL_TARGET) .
 GRABBY_HANDS = docker run --rm --mount type=bind,source=$(shell pwd)/output/$(MUSL_TARGET),target=/grabby $@-$(MUSL_TARGET) install -g $(shell id -g) -o $(shell id -u) 
 
-all: busybox-1.33.1 curl-7.79.1 dropbear-2020.81 loggedfs-0.9 nmap-7.90 openssl-1.1.1k socat-1.7.4.1 tcpdump-4.99.1
+all: busybox-1.33.1 curl-7.79.1 dropbear-2020.81 loggedfs-0.9 ngrep-2a9603b nmap-7.90 openssl-1.1.1k parted-3.4 socat-1.7.4.1 tcpdump-4.99.1
 
 check:
 	@echo "These binaries are not built properly:"
@@ -86,6 +86,10 @@ nmap-7.90: openssl-1.1.1k libpcap-1.10.1 zlib-1.2.11 pcre-8.45
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/nmap /grabby/$@
 
+ngrep-2a9603b: libpcap-1.10.1 pcre-8.45
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/ngrep /grabby/$@
+
 tcpdump-4.99.1: libpcap-1.10.1
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/tcpdump /grabby/$@
@@ -103,14 +107,17 @@ nsjail-3.0: libnl-3.2.25 protobuf-3.19.1
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /build/nsjail-3.0/nsjail /grabby/$@
 
-parted-3.4: e2fsprogs-1.46.5 readline-8.1
-	$(DOCKER_BUILD)
-	$(GRABBY_HANDS) /output/sbin/parted /grabby/$@
-
 # By default just build the basic 'git' binary. If you want "everything" then set GIT_FULL as an environment variable. The 'git-versionnumber' binary will need to be renamed to just 'git' to work.
 git-2.33.0: expat-2.4.1 openssl-1.1.1k curl-7.79.1 zlib-1.2.11
 	$(DOCKER_BUILD)
-	$(GRABBY_HANDS) /output/bin/git /grabby/$@
+	#$(GRABBY_HANDS) /output/bin/git /grabby/$@
 ifdef GIT_FULL
 	$(GRABBY_HANDS) /output/full.tar.gz /grabby/$@.tar.gz
 endif
+
+openssh-8.8p1: musl-cross-make zlib-1.2.11 openssl-1.1.1k
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/ssh /grabby/ssh-8.8p1
+	$(GRABBY_HANDS) /output/bin/scp /grabby/scp-8.8p1
+	$(GRABBY_HANDS) /output/bin/sftp /grabby/sftp-8.8p1
+	$(GRABBY_HANDS) /output/bin/ssh-keygen /grabby/ssh-keygen-8.8p1

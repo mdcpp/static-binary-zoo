@@ -1,0 +1,24 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM libpcap-1.10.1-${MUSL_TARGET} AS libpcap
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=libpcap /output /output
+
+WORKDIR /build
+RUN download https://github.com/jpr5/ngrep/archive/2a9603bc67dface9606a658da45e1f5c65170444.tar.gz source.tar.gz 500c29914dd26f5aa6df07446388d49b60249622c9b0fd1f266f62a5706f056c && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:$PATH && \
+cd ngrep-* && \
+CC="${MUSL_TARGET}-gcc -static" \
+CXX="${MUSL_TARGET}-g++ -static -static-libstdc++" \
+CFLAGS="-frandom-seed=pulse -I/output/include" \
+LDFLAGS="-L/output/lib" \
+./configure \
+--enable-ipv6 \
+--prefix=/output \
+--host=$($MUSL_TARGET-gcc -dumpmachine) && \
+make -j$(nproc) && \
+make install && \
+$MUSL_TARGET-strip /output/bin/ngrep
+
+CMD bash

@@ -1,6 +1,6 @@
 # static-binary-zoo
 
-A set of Dockerfiles to statically cross-compile various "hacker tools" using [musl-cross-make](https://github.com/richfelker/musl-cross-make). This is a work in progress, and I'll be adding recipes and further documentation over time.
+A set of Dockerfiles to statically cross-compile various "hacker tools" using [musl-cross-make](https://github.com/richfelker/musl-cross-make). This is a work in progress, and more tools and libraries will be added over time.
 
 ## Usage
 
@@ -27,7 +27,9 @@ These are the tools that build cleanly without too many caveats and are generall
 * `curl-7.79.1`
 * `dropbear-2020.81` (`dropbear`, `dropbearclient` and `dropbearkey`)
 * `loggedfs-0.9`
+* `ngrep-2a9603b`
 * `nmap-7.90` (some extra functionality is missing as it requires additional data files)
+* `openssh-8.8p1` (`ssh`, `scp`, `sftp` and `ssh-keygen`)
 * `openssl-0.9.8zh` (insecure, not for general use)
 * `openssl-1.1.1k`
 * `parted-3.4`
@@ -78,6 +80,13 @@ Some goals of the project:
 And yet to be added:
 
 * Update notification feature (this may involve switching package sources to come from Debian).
+
+## Contributors
+
+These people have contributed code and fixes:
+
+* Adam Baxter (@voltagex)
+* Michael Fincham (https://finch.am/)
 
 ## Feedback? Questions?
 

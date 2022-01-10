@@ -10,7 +10,7 @@ sed -e 's/http:\/\/[^/]*/http:\/\/deb.debian.org/g' -i /etc/apt/sources.list && 
 apt-get --option=Dpkg::Options::=--force-unsafe-io update && \
 apt-get --option=Dpkg::Options::=--force-confold --option=Dpkg::Options::=--force-unsafe-io -y dist-upgrade && \
 apt-get --option=Dpkg::Options::=--force-unsafe-io -y autoremove && \
-apt-get --option=Dpkg::Options::=--force-confold --option=Dpkg::Options::=--force-unsafe-io install -y --no-install-recommends build-essential ca-certificates wget unzip flex bison autoconf file python3 && \
+apt-get --option=Dpkg::Options::=--force-confold --option=Dpkg::Options::=--force-unsafe-io install -y --no-install-recommends build-essential ca-certificates wget unzip flex bison autoconf file python3 cmake && \
 apt-get clean
 RUN download https://github.com/richfelker/musl-cross-make/archive/refs/tags/v0.9.9.zip /tmp/musl-cross-make.zip 6cbe2f6ce92e7f8f3973786aaf0b990d0db380c0e0fc419a7d516df5bb03c891 && \
 mkdir /build && \

@@ -3,7 +3,7 @@ FROM musl-cross-make-$MUSL_TARGET
 ARG MUSL_TARGET
 
 WORKDIR /build
-RUN download https://ftp.pcre.org/pub/pcre/pcre-8.45.tar.gz source.tar.gz 4e6ce03e0336e8b4a3d6c2b70b1c5e18590a5673a98186da90d4f33c23defc09 && tar xf source.tar.gz
+RUN download https://ftp.exim.org/pub/pcre/pcre-8.45.tar.gz source.tar.gz 4e6ce03e0336e8b4a3d6c2b70b1c5e18590a5673a98186da90d4f33c23defc09 && tar xf source.tar.gz
 RUN export PATH=/build/cross/bin:$PATH && \
 cd pcre-* && \
 CC="$MUSL_TARGET-gcc" \

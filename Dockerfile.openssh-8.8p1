@@ -1,0 +1,23 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM zlib-1.2.11-${MUSL_TARGET} AS zlib
+FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=zlib /output /output
+COPY --from=openssl /output /output
+
+RUN download https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.8p1.tar.gz source.tar.gz 4590890ea9bb9ace4f71ae331785a3a5823232435161960ed5fc86588f331fe9 && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:/output/bin:$PATH && \
+cd openssh-* && \
+export CC="$MUSL_TARGET-gcc" && \
+export CFLAGS="-static -frandom-seed=pulse -I/output/include" && \
+export CPPFLAGS=$CFLAGS && \
+export LDFLAGS="-L/output/lib" && \
+./configure --host=$($CC -dumpmachine) --with-zlib=/output --prefix=/output --with-pie --with-ldflags=-static --disable-strip && \ 
+make -j$(nproc) && \
+make install-files && \
+$MUSL_TARGET-strip /output/bin/ssh && \
+$MUSL_TARGET-strip /output/bin/scp && \
+$MUSL_TARGET-strip /output/bin/sftp && \
+$MUSL_TARGET-strip /output/bin/ssh-keygen

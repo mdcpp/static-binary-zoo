@@ -11,7 +11,6 @@ COPY --from=expat /output /output
 COPY --from=openssl /output /output
 COPY --from=curl /output /output
 
-# Avoid generating translations by dummying out msgfmt, also makes dependency on gettext optional
 WORKDIR /build
 RUN download https://github.com/git/git/archive/refs/tags/v2.33.0.tar.gz source.tar.gz ac8bb4bd4f689ddacd1f17c13e519c78d0f38ffc7c41dc24a4dbeb576bc88e91 && tar xf source.tar.gz
 RUN export PATH=/build/cross/bin:/output/bin:$PATH && \
@@ -25,7 +24,14 @@ make configure && \
 ./configure \
 --without-tcltk \
 --host=$($MUSL_TARGET-gcc -dumpmachine) \
---prefix=/output && \
+--target=$($MUSL_TARGET-gcc -dumpmachine) \
+--prefix=/output \
+# https://public-inbox.org/git/20190211214306.GB14229@alpha/
+# https://git.exherbo.org/arbor.git/tree/packages/dev-scm/git/git-build.exlib#n161
+# https://patch-diff.githubusercontent.com/raw/void-linux/void-packages/pull/18139.patch
+# https://marc.info/?l=git&m=120473229209965
+ac_cv_iconv_omits_bom=yes ac_cv_fread_reads_directories=no ac_cv_snprintf_returns_bogus=no && \
+# Avoid generating translations by dummying out msgfmt, also makes dependency on gettext optional
 echo "#!/bin/sh\nexit 0" > /usr/local/bin/msgfmt && \
 chmod +x /usr/local/bin/msgfmt && \
 make -j$(nproc) && \
