@@ -1,0 +1,27 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM e2fsprogs-1.46.5-${MUSL_TARGET} AS e2fsprogs
+FROM readline-8.1-${MUSL_TARGET} AS readline
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=e2fsprogs /output /output
+COPY --from=readline /output /output
+
+WORKDIR /build
+RUN download https://mirror.fsmg.org.nz/gnu/parted/parted-3.4.tar.xz source.tar.xz e1298022472da5589b7f2be1d5ee3c1b66ec3d96dfbad03dc642afd009da5342 && tar xf source.tar.xz
+RUN export PATH=/build/cross/bin:$PATH:/output/bin && \
+cd parted-* && \
+export CC="$MUSL_TARGET-gcc" && \
+export CFLAGS="-static -I/output/include -frandom-seed=pulse" && \
+export LDFLAGS="--static -L/output/lib" && \
+./configure \
+--enable-shared=no \
+--disable-device-mapper \
+--enable-static=yes \
+--prefix=/output \
+--host=$($MUSL_TARGET-gcc -dumpmachine) && \
+make -j$(nproc) && \
+make install && \
+${MUSL_TARGET}-strip /output/sbin/parted
+
+CMD bash

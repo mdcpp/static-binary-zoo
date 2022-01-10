@@ -8,7 +8,7 @@ all: busybox-1.33.1 curl-7.79.1 dropbear-2020.81 loggedfs-0.9 nmap-7.90 openssl-
 
 check:
 	@echo "These binaries are not built properly:"
-	@echo "$(shell file output/*/* | grep -E -v "\.tar\.gz|statically linked, stripped$$")"
+	@echo "$(shell file output/*/* | grep -E -v "\.tar\.gz|statically linked")"
 
 ## Dependencies
 
@@ -35,6 +35,9 @@ protobuf-3.19.1: musl-cross-make
 	$(DOCKER_BUILD)
 
 expat-2.4.1: musl-cross-make
+	$(DOCKER_BUILD)
+
+e2fsprogs-1.46.5: musl-cross-make
 	$(DOCKER_BUILD)
 
 # Produces both libcurl and the curl binary.
@@ -99,6 +102,10 @@ busybox-1.33.1: musl-cross-make
 nsjail-3.0: libnl-3.2.25 protobuf-3.19.1
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /build/nsjail-3.0/nsjail /grabby/$@
+
+parted-3.4: e2fsprogs-1.46.5 readline-8.1
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/sbin/parted /grabby/$@
 
 # By default just build the basic 'git' binary. If you want "everything" then set GIT_FULL as an environment variable. The 'git-versionnumber' binary will need to be renamed to just 'git' to work.
 git-2.33.0: expat-2.4.1 openssl-1.1.1k curl-7.79.1 zlib-1.2.11
