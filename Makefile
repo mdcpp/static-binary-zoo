@@ -78,11 +78,11 @@ dropbear-2020.81: zlib-1.2.11
 	$(GRABBY_HANDS) /output/bin/dropbearkey /grabby/dropbearkey-2020.81
 	$(GRABBY_HANDS) /output/sbin/dropbear /grabby/$@
 
-socat-1.7.4.1: readline-8.1 openssl-1.1.1k
+socat-1.7.4.1: openssl-1.1.1k readline-8.1
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/socat /grabby/$@
 
-nmap-7.90: openssl-1.1.1k libpcap-1.10.1 zlib-1.2.11 pcre-8.45
+nmap-7.90: libpcap-1.10.1 openssl-1.1.1k pcre-8.45 zlib-1.2.11 
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/nmap /grabby/$@
 
@@ -94,7 +94,7 @@ tcpdump-4.99.1: libpcap-1.10.1
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/tcpdump /grabby/$@
 
-loggedfs-0.9: pcre-8.45 libxml2-2.9.12 fuse-2.9.9
+loggedfs-0.9: fuse-2.9.9 libxml2-2.9.12 pcre-8.45
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/loggedfs /grabby/$@
 
@@ -102,22 +102,25 @@ busybox-1.33.1: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/busybox /grabby/$@
 
-# Currently this will only build on 64 bit ARM, 32 or 64 bit x86. This will be sorted out later.
-nsjail-3.0: libnl-3.2.25 protobuf-3.19.1
-	$(DOCKER_BUILD)
-	$(GRABBY_HANDS) /build/nsjail-3.0/nsjail /grabby/$@
-
-# By default just build the basic 'git' binary. If you want "everything" then set GIT_FULL as an environment variable. The 'git-versionnumber' binary will need to be renamed to just 'git' to work.
-git-2.33.0: expat-2.4.1 openssl-1.1.1k curl-7.79.1 zlib-1.2.11
-	$(DOCKER_BUILD)
-	#$(GRABBY_HANDS) /output/bin/git /grabby/$@
-ifdef GIT_FULL
-	$(GRABBY_HANDS) /output/full.tar.gz /grabby/$@.tar.gz
-endif
-
-openssh-8.8p1: musl-cross-make zlib-1.2.11 openssl-1.1.1k
+openssh-8.8p1: openssl-1.1.1k zlib-1.2.11
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/ssh /grabby/ssh-8.8p1
 	$(GRABBY_HANDS) /output/bin/scp /grabby/scp-8.8p1
 	$(GRABBY_HANDS) /output/bin/sftp /grabby/sftp-8.8p1
 	$(GRABBY_HANDS) /output/bin/ssh-keygen /grabby/ssh-keygen-8.8p1
+
+## Slightly crusty tools
+
+# By default just build the basic 'git' binary. If you want "everything" then set GIT_FULL as an environment variable. The 'git-versionnumber' binary will need to be renamed to just 'git' to work.
+git-2.33.0: curl-7.79.1 expat-2.4.1 openssl-1.1.1k zlib-1.2.11
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/git /grabby/$@
+ifdef GIT_FULL
+	$(GRABBY_HANDS) /output/full.tar.gz /grabby/$@.tar.gz
+endif
+
+# Currently this will only build on 64 bit ARM, 32 or 64 bit x86. This will be sorted out later.
+nsjail-3.0: libnl-3.2.25 protobuf-3.19.1
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /build/nsjail-3.0/nsjail /grabby/$@
+
