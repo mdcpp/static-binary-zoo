@@ -31,7 +31,7 @@ pcre-8.45: musl-cross-make
 libnl-3.2.25: musl-cross-make
 	$(DOCKER_BUILD)
 
-protobuf-3.19.1: musl-cross-make
+protobuf-3.21.1: musl-cross-make
 	$(DOCKER_BUILD)
 
 expat-2.4.1: musl-cross-make
@@ -120,7 +120,7 @@ ifdef GIT_FULL
 endif
 
 # Currently this will only build on 64 bit ARM, 32 or 64 bit x86. This will be sorted out later.
-nsjail-3.0: libnl-3.2.25 protobuf-3.19.1
+nsjail-3.1: libnl-3.2.25 protobuf-3.21.1
 	$(DOCKER_BUILD)
-	$(GRABBY_HANDS) /build/nsjail-3.0/nsjail /grabby/$@
+	$(GRABBY_HANDS) /build/nsjail-3.1/nsjail /grabby/$@
 
