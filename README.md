@@ -34,6 +34,7 @@ These are the tools that build cleanly without too many caveats and are generall
 * `openssl-1.1.1k`
 * `parted-3.4`
 * `socat-1.7.4.1`
+* `stunnel-5.64`
 * `tcpdump-4.99.1`
 
 ### Experimental tools
