@@ -11,7 +11,7 @@ RUN export PATH=/build/cross/bin:$PATH:/output/bin && \
 cd stunnel-* && \
 export CC="$MUSL_TARGET-gcc" && \
 export CFLAGS="-static -I/output/include -frandom-seed=pulse" && \
-export LDFLAGS="--static -L/output/lib" && \
+export LDFLAGS="--static -L/output/lib $(if echo "$MUSL_TARGET" | grep i386 >/dev/null; then printf -- '-l:libatomic.a'; fi)" && \
 ./configure \
 --disable-shared \
 --disable-fips \
