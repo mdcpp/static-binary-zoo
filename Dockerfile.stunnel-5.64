@@ -1,0 +1,26 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=openssl /output /output
+
+WORKDIR /build
+RUN download https://www.stunnel.org/downloads/stunnel-5.64.tar.gz source.tar.gz eebe53ed116ba43b2e786762b0c2b91511e7b74857ad4765824e7199e6faf883 && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:$PATH:/output/bin && \
+cd stunnel-* && \
+export CC="$MUSL_TARGET-gcc" && \
+export CFLAGS="-static -I/output/include -frandom-seed=pulse" && \
+export LDFLAGS="--static -L/output/lib" && \
+./configure \
+--disable-shared \
+--disable-fips \
+--with-threads=fork \
+--enable-static \
+--prefix=/output \
+--host=$($MUSL_TARGET-gcc -dumpmachine) && \
+make -j$(nproc) && \
+make install && \
+${MUSL_TARGET}-strip /output/bin/stunnel
+
+CMD bash

@@ -110,8 +110,12 @@ openssh-8.8p1: openssl-1.1.1k zlib-1.2.11
 	$(GRABBY_HANDS) /output/bin/ssh-keygen /grabby/ssh-keygen-8.8p1
 
 parted-3.4: e2fsprogs-1.46.5 readline-8.1
-       $(DOCKER_BUILD)
-       $(GRABBY_HANDS) /output/sbin/parted /grabby/parted-3.4
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/sbin/parted /grabby/parted-3.4
+
+stunnel-5.64: openssl-1.1.1k
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/stunnel /grabby/$@
 
 ## Slightly crusty tools
 
