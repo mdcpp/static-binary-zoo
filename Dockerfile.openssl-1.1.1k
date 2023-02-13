@@ -14,6 +14,7 @@ LDFLAGS="-L/output/lib" \
 -static \
 no-shared no-engine no-idea no-mdc2 no-rc5 no-zlib no-ssl3 no-capieng \
 --prefix=/output \
+$(if echo "$MUSL_TARGET" | grep i386 >/dev/null; then printf -- '-latomic'; fi) \
 $(if echo "$MUSL_TARGET" | grep 64 >/dev/null; then echo linux-generic64; else echo linux-generic32; fi) && \
 make -j$(nproc) && \
 make install_sw && \
