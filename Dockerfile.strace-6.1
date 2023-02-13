@@ -1,0 +1,20 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM musl-cross-make-$MUSL_TARGET
+ARG MUSL_TARGET
+
+WORKDIR /build
+RUN download https://github.com/strace/strace/releases/download/v6.1/strace-6.1.tar.xz source.tar.xz 2579e9cec37dbb786f6ea0bebd15f40dd561ef2bde2a2a2ecdce5963b01859fd && tar xf source.tar.xz
+RUN export PATH=/build/cross/bin:$PATH && \
+cd strace-* && \
+DEBIAN_FRONTEND=noninteractive apt install -y gawk && \
+CC="$MUSL_TARGET-gcc" \
+CFLAGS="-static -frandom-seed=pulse" \
+./configure \
+--prefix=/output \
+--disable-mpers \
+--host=$($MUSL_TARGET-gcc -dumpmachine) && \
+make -j$(nproc) && \
+make install && \
+$MUSL_TARGET-strip /output/bin/strace 
+
+CMD bash

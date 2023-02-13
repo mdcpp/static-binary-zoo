@@ -102,6 +102,10 @@ busybox-1.33.1: musl-cross-make
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/busybox /grabby/$@
 
+strace-6.1: musl-cross-make
+	$(DOCKER_BUILD)
+	$(GRABBY_HANDS) /output/bin/strace /grabby/$@
+
 openssh-8.8p1: openssl-1.1.1k zlib-1.2.11
 	$(DOCKER_BUILD)
 	$(GRABBY_HANDS) /output/bin/ssh /grabby/ssh-8.8p1
