@@ -1,0 +1,24 @@
+ARG MUSL_TARGET=x86_64-linux-musl
+FROM openssl-1.1.1k-${MUSL_TARGET} AS openssl
+FROM pcre-8.45-${MUSL_TARGET} AS pcre
+FROM musl-cross-make-${MUSL_TARGET}
+ARG MUSL_TARGET
+
+COPY --from=openssl /output /output
+COPY --from=pcre /output /output
+
+WORKDIR /build
+RUN download https://github.com/denandz/fuzzotron/archive/09b70461f6bcefac47ca9d43612209e68a7450aa.tar.gz source.tar.gz e994aef759e4091e85bcb41071be62c65e295647bca87e2de7d9b7a6dce700ac && tar xf source.tar.gz
+RUN export PATH=/build/cross/bin:$PATH && \
+cd fuzzotron-* && \
+sed -e 's/^LIBS = .*/LIBS = -lpcre -lssl -lcrypto -lpthread/' -i Makefile && \
+CC="${MUSL_TARGET}-gcc -static -frandom-seed=pulse -I/output/include" \
+LDFLAGS="-L/output/lib" \
+make -j$(nproc) fuzzotron replay && \
+mkdir -p /output/bin && \
+cp replay /output/bin/replay && \ 
+cp fuzzotron /output/bin/fuzzotron && \
+$MUSL_TARGET-strip /output/bin/fuzzotron && \
+$MUSL_TARGET-strip /output/bin/replay
+
+CMD bash

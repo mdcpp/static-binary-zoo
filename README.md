@@ -26,6 +26,7 @@ These are the tools that build cleanly without too many caveats and are generall
 * `busybox-1.33.1`
 * `curl-7.79.1`
 * `dropbear-2020.81` (`dropbear`, `dropbearclient` and `dropbearkey`)
+* `fuzzotron-09b7046 (`fuzzotron` and `replay`)
 * `loggedfs-0.9`
 * `ngrep-2a9603b`
 * `nmap-7.90` (some extra functionality is missing as it requires additional data files)
