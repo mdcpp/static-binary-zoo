@@ -27,6 +27,7 @@ cat /build/patches/clone_args.h >> subproc.h && \
 sed -e 's/-Werror//' -e 's/-pie//' -e 's/-fPIE//' -i Makefile && \
 sed -e 's/YYUSE/YY_USE/' -i kafel/src/parser.y && \
 sed -e 's/^TARGET=.*/TARGET=${STATIC_TARGET}/' -i kafel/src/Makefile && \
+sed -e 's/return nsjconf->cgroupv2_mount + "\/NSJAIL." + std::to_string(pid)/return nsjconf->cgroupv2_mount + "\/" + nsjconf->cgroup_cpu_parent/g' -i cgroup2.cc && \
 export CC="$MUSL_TARGET-gcc -static" && \
 export CXX="$MUSL_TARGET-g++ -static" && \
 export CFLAGS="-I/output/include -I/output/include/libnl3 -I/output/include/google -frandom-seed=pulse" && \
